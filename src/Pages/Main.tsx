@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { useAuth } from "../State/AuthState";
+import Calendar from "../Components/Calendar";
 
 function Main() {
-  const [count, setCount] = useState(0);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const { user } = useAuth() ?? { user: null };
 
-  return <div>{user && user.email}</div>;
+  return (
+    <div>
+      {selectedDay}
+      <Calendar setSelectedDay={(day) => setSelectedDay(day)} />
+    </div>
+  );
 }
 
 export default Main;
