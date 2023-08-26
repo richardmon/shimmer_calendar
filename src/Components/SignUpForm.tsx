@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { auth } from "../utils/firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 type SignUpSubmit = {
   email: string;
@@ -12,16 +14,28 @@ const SignUpForm: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<SignUpSubmit>();
+  const [firebaseError, setFirebaseError] = useState(null);
 
-  const onSubmit = (data: SignUpSubmit) => {
-    console.log(data);
-    // Handle your signup logic here
+  const onSubmit = async (data: SignUpSubmit) => {
+    try {
+      setFirebaseError(null);
+      await createUserWithEmailAndPassword(auth, data.email, data.password);
+    } catch (err: any) {
+      setFirebaseError(err.message);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="p-8 w-96">
         <h2 className="text-2xl font-semibold mb-6 text-gray-700">SignUp</h2>
+        {firebaseError && (
+          <div>
+            <p className="mt-2 p-2 border-l-4 border-red-500 bg-red-50 text-red-700 rounded">
+              {firebaseError}
+            </p>
+          </div>
+        )}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="flex flex-col space-y-2">
             <label htmlFor="email" className="text-gray-600">
