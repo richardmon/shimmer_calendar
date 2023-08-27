@@ -6,8 +6,8 @@ type CalendarProps = {
   setSelectedDay: (day: number) => void;
 };
 
-const Calendar: React.FC<CalendarProps> = ({setSelectedDay}) => {
-  const [clickedDay, setClickDay]  = useState<number | null>(null);
+const Calendar: React.FC<CalendarProps> = ({ setSelectedDay }) => {
+  const [clickedDay, setClickDay] = useState<number | null>(null);
 
   const today = new Date();
   const daysInCurrentMonth = new Date(
@@ -27,24 +27,21 @@ const Calendar: React.FC<CalendarProps> = ({setSelectedDay}) => {
     1,
   ).getDay();
 
-  console.log(daysInPreviousMonth);
-  console.log(firstDayOfMonth);
-
   const daysFromPrevMonthToShow = Array.from({ length: firstDayOfMonth }).map(
     (_, index) => daysInPreviousMonth - firstDayOfMonth + index + 1,
   );
   console.log(daysFromPrevMonthToShow);
 
   const isBeforeToday = (day: number) => {
-      return today.getDate() > day;
-  }
+    return today.getDate() > day;
+  };
 
-  const handleClickDay = (index:number) => {
-    if (!isBeforeToday(index+1)){
-        setSelectedDay(index+1);
-        setClickDay(index);
-      }
-  }
+  const handleClickDay = (index: number) => {
+    if (!isBeforeToday(index + 1)) {
+      setSelectedDay(index + 1);
+      setClickDay(index);
+    }
+  };
 
   return (
     <div className="p-4">
@@ -61,22 +58,22 @@ const Calendar: React.FC<CalendarProps> = ({setSelectedDay}) => {
           </div>
         ))}
         {daysFromPrevMonthToShow.map((day) => (
-          <div className="flex justify-center items-center">
-            <div
-              key={day}
-              className="w-10 h-10 flex items-center justify-center text-center text-gray-400 border rounded-full"
-            >
+          <div className="flex justify-center items-center" key={day}>
+            <div className="w-10 h-10 flex items-center justify-center text-center text-gray-400 border rounded-full">
               {day}
             </div>
           </div>
         ))}
         {Array.from({ length: daysInCurrentMonth }).map((_, index) => (
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center" key={index}>
             <div
-              key={index}
               className={`w-10 h-10 flex items-center justify-center text-center border rounded-full
-              ${isBeforeToday(index+1) ? 'opacity-50 cursor-default' : 'hover:bg-blue-100 cursor-pointer'}
-              ${clickedDay === index ? 'bg-blue-400 hover:bg-blue-500' : ""}
+              ${
+                isBeforeToday(index + 1)
+                  ? "opacity-50 cursor-default"
+                  : "hover:bg-blue-100 cursor-pointer"
+              }
+              ${clickedDay === index ? "bg-blue-400 hover:bg-blue-500" : ""}
               `}
               onClick={() => handleClickDay(index)}
             >
