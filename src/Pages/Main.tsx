@@ -4,17 +4,7 @@ import Calendar from "../Components/Calendar";
 import AvailabiltyColumn from "../Components/AvailabilityColumn";
 
 function Main() {
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const { user } = useAuth() ?? { user: null };
-
-  console.log(user);
-
-  const selectedDate = new Date();
-  useEffect(() => {
-    if (selectedDay) {
-      selectedDate.setDate(selectedDay);
-    }
-  }, [selectedDay]);
+  const [selectedDate, setSelectedDay] = useState<Date | null>(null);
 
   return (
     <div className="h-screen flex columns-2">
@@ -26,7 +16,7 @@ function Main() {
       <div className="h-screen w-2/6 overflow-y-auto">
         <div className="h-full flex justify-center items-center">
           <AvailabiltyColumn
-            selectedDate={selectedDay ? selectedDate : undefined}
+            selectedDate={selectedDate ?? undefined}
           />
         </div>
       </div>
