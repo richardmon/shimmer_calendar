@@ -63,16 +63,24 @@ const Calendar: React.FC<CalendarProps> = ({ setSelectedDay }) => {
             {day}
           </div>
         ))}
-        {Array.from({ length: new Date(displayedYear, displayedMonth + 1, 0).getDate() }).map((_, index) => (
+        {Array.from({
+          length: new Date(displayedYear, displayedMonth + 1, 0).getDate(),
+        }).map((_, index) => (
           <div className="flex justify-center items-center" key={index}>
             <div
               className={`w-10 h-10 flex items-center justify-center text-center border rounded-full
               ${
-                isOutsideSelectableRange(new Date(displayedYear, displayedMonth, index + 1))
+                isOutsideSelectableRange(
+                  new Date(displayedYear, displayedMonth, index + 1),
+                )
                   ? "opacity-50 cursor-default"
                   : "hover:bg-blue-100 cursor-pointer"
               }
-              ${clickedDate?.getDate() === index + 1 ? "bg-blue-400 hover:bg-blue-500" : ""}
+              ${
+                clickedDate?.getDate() === index + 1
+                  ? "bg-blue-400 hover:bg-blue-500"
+                  : ""
+              }
               `}
               onClick={() => handleClickDay(index)}
             >

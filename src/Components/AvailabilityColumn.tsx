@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { format, utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
-import { useAuth } from "../State/AuthState";
-import { db } from "../utils/firebaseConfig";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { useAppointment } from "../State/DateContext";
+import { useNavigate } from "react-router";
 
 // TODO: get time availability from the database
 
@@ -16,7 +15,8 @@ const AvailabiltyColumn: React.FC<AvailabiltyColumnProps> = ({
   const [slotsInUserTimeZone, setSlotsInUserTimeZone] = useState<Date[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<Date>();
   const usersTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const { user } = useAuth() ?? { user: null };
+  const { setAppointmentDate } = useAppointment();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!selectedDate) return;
@@ -52,48 +52,32 @@ const AvailabiltyColumn: React.FC<AvailabiltyColumnProps> = ({
     setSelectedSlot(selectedSlotInUserTimeZone);
   };
 
-  const createAppointment = async () => {
-    if (!selectedSlot || !user) {
+  const goToConfirmation = async () => {
+    if (!selectedSlot) {
       return;
     }
     const selectedSlotInPST = utcToZonedTime(
       zonedTimeToUtc(selectedSlot, usersTimeZone),
       "America/Los_Angeles",
     );
-    const meetingEndTime = new Date(selectedSlotInPST);
-    meetingEndTime.setMinutes(meetingEndTime.getMinutes() + 30);
-
-    const userDocRef = doc(db, "usermeetings", user.uid);
-
-    // update timezone
-    await setDoc(userDocRef, { timezone: usersTimeZone }, { merge: true });
-
-    // store time
-    const userMeetingsCollection = collection(
-      db,
-      "usermeetings",
-      user.uid,
-      "meeting",
-    );
-    const newMeetingDoc = doc(userMeetingsCollection);
-    await setDoc(newMeetingDoc, {
-      timestampStart: selectedSlotInPST, // start time
-      timestampEnd: meetingEndTime, // end time
-    });
+    setAppointmentDate(selectedSlotInPST);
+    navigate("/confirmation");
   };
 
   return !selectedDate ? (
-    <div className="h-100 flex justify-center items-center">
+    <div className="flex justify-center items-center">
       <p className="font-bold text-lg">Select a valid date</p>
     </div>
   ) : (
-    <div className="pt-48">
+    <div className="pt-2">
       <h1 className="mb-4 text-center bold">Select time slot</h1>
       <ul className="flex flex-col justify-center items-center">
         {slotsInUserTimeZone.map((slot, index) => (
           <li key={index} className="mb-2">
             <button
-              className="p-2 border rounded"
+              className={`p-2 border rounded ${
+                selectedSlot === slot ? "bg-shimmer-yellow" : ""
+              } `}
               onClick={() => handleSlotSelection(index)}
             >
               {format(slot, "HH:mm a", { timeZone: usersTimeZone })}
@@ -104,10 +88,10 @@ const AvailabiltyColumn: React.FC<AvailabiltyColumnProps> = ({
       <div className="justify-center items-center">
         {selectedSlot && (
           <button
-            onClick={() => createAppointment()}
-            className="my-8 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={() => goToConfirmation()}
+            className="my-8 bg-shimmer-yellow text-black py-2 px-4 rounded"
           >
-            Create Appointment{" "}
+            Next
           </button>
         )}
       </div>
